@@ -1,0 +1,49 @@
+{
+  "name": "board_t",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon server/index.ts",
+    "dev:client": "ts-node server/index.ts",
+    "build:server": "tsc --project tsconfig.server.json",
+    "build:next": "next build",
+    "build": "npm-run-all build:*",
+    "start": "NODE_ENV=production node build/index.js",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "framer-motion": "^12.4.5",
+    "next": "15.1.7",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-use": "^17.6.0",
+    "recoil": "^0.7.6",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^20.17.19",
+    "@types/react": "^19.0.10",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^8.57.1",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-airbnb-typescript": "^18.0.0",
+    "eslint-config-next": "^15.1.7",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-prettier": "^5.2.3",
+    "eslint-plugin-react": "^7.37.4",
+    "eslint-plugin-react-hooks": "^4.6.2",
+    "eslint-plugin-tailwindcss": "^3.18.0",
+    "eslint-plugin-unused-imports": "^4.1.4",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.5.3",
+    "prettier": "^3.5.1",
+    "prettier-plugin-tailwindcss": "^0.6.11",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.7.3"
+  }
+}
