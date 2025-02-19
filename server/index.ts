@@ -1,31 +1,31 @@
-/* eslint-disable no-console */
-import { createServer } from 'http';
 import express, { Request, Response } from 'express';
-import next, { NextApiHandler } from 'next';
+import { createServer } from 'http';
 import { Server } from 'socket.io';
-import { ClientToServerEvents, ServerToClientEvents } from './types/socket';
+import next from 'next';
+import { NextApiRequest, NextApiResponse } from 'next';
 
-const port = parseInt(process.env.PORT || '3000', 10);
 const dev = process.env.NODE_ENV !== 'production';
 const nextApp = next({ dev });
-const nextHandler: NextApiHandler = nextApp.getRequestHandler();
+const nextHandler = nextApp.getRequestHandler();
 
-nextApp.prepare().then(async () => {
-  const app = express();
-  const server = createServer(app);
+const app = express();
+const server = createServer(app);
+const io = new Server(server);
 
-  const io = new Server<ClientToServerEvents, ServerToClientEvents>(server);
+const port = process.env.PORT || 3000;
 
-  app.get('/hello', async (_, res) => {
-    res.send('Hello World');
-  });
-
+nextApp.prepare().then(() => {
   io.on('connection', (socket) => {
-    console.log('connection');
+    console.log('a user connected');
 
     socket.on('draw', (moves, options) => {
       console.log('drawing');
       socket.broadcast.emit('socket_draw', moves, options);
+    });
+
+    socket.on('mouse_move', (x, y) => {
+      console.log('mouse_move');
+      socket.broadcast.emit('mouse_moved', x, y, socket.id);
     });
 
     socket.on('disconnect', () => {
@@ -33,14 +33,8 @@ nextApp.prepare().then(async () => {
     });
   });
 
-  // Fix for line 38: Wrap nextHandler in a promise
-  app.all('*', async (req: Request, res: Response) => {
-    try {
-      await nextHandler(req as any, res as any);
-    } catch (error) {
-      console.error('Error handling request:', error);
-      res.status(500).send('Internal Server Error');
-    }
+  app.all('*', (req: Request, res: Response) => {
+    return nextHandler(req, res);
   });
 
   server.listen(port, () => {
