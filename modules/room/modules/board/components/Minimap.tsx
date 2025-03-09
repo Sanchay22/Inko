@@ -19,22 +19,25 @@ const MiniMap = ({ dragging }: { dragging: boolean }) => {
   const [draggingMinimap, setDraggingMinimap] = useState(false);
 
   useEffect(() => {
-    if (!draggingMinimap) {
-      const unsubscribe = boardPos.x.onChange(setX);
-      return unsubscribe;
-    }
-
-    return () => {};
-  }, [boardPos.x, draggingMinimap]);
-
-  useEffect(() => {
-    if (!draggingMinimap) {
-      const unsubscribe = boardPos.y.onChange(setY);
-      return unsubscribe;
-    }
-
-    return () => {};
-  }, [boardPos.y, draggingMinimap]);
+    // Create a single update function to handle both x and y changes
+    const updatePositionFromBoard = () => {
+      setX(boardPos.x.get());
+      setY(boardPos.y.get());
+    };
+    
+    // Initial update
+    updatePositionFromBoard();
+    
+    // Subscribe to both x and y changes
+    const unsubscribeX = boardPos.x.on("change", updatePositionFromBoard);
+    const unsubscribeY = boardPos.y.on("change", updatePositionFromBoard);
+    
+    // Clean up subscriptions
+    return () => {
+      unsubscribeX();
+      unsubscribeY();
+    };
+  }, [boardPos.x, boardPos.y]);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -49,16 +52,20 @@ const MiniMap = ({ dragging }: { dragging: boolean }) => {
   }, [width]);
 
   useEffect(() => {
-    miniX.onChange((newX) => {
+    const handleMiniXChange = (newX: number) => {
       if (!dragging) boardPos.x.set(Math.floor(-newX * divider));
-    });
-    miniY.onChange((newY) => {
+    };
+    
+    const handleMiniYChange = (newY: number) => {
       if (!dragging) boardPos.y.set(Math.floor(-newY * divider));
-    });
+    };
+    
+    const unsubscribeX = miniX.on("change", handleMiniXChange);
+    const unsubscribeY = miniY.on("change", handleMiniYChange);
 
     return () => {
-      miniX.clearListeners();
-      miniY.clearListeners();
+      unsubscribeX();
+      unsubscribeY();
     };
   }, [boardPos.x, boardPos.y, divider, dragging, miniX, miniY]);
 

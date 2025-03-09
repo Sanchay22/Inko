@@ -1,19 +1,13 @@
 import { useEffect, useState } from 'react';
-
 import { AnimatePresence, motion } from 'framer-motion';
 import { useRecoilState } from 'recoil';
-
 import Portal from '@/common/components/portal/components/Portal';
-
-import {
-  bgAnimation,
-  modalAnimation,
-} from '../animations/ModalManager.animations';
+import { bgAnimation, modalAnimation } from '../animations/ModalManager.animations';
 import { modalAtom } from '../recoil/modal.atom';
+import { DEFAULT_EASE } from '@/common/constants/easings';
 
 const ModalManager = () => {
   const [{ opened, modal }, setModal] = useRecoilState(modalAtom);
-
   const [portalNode, setPortalNode] = useState<HTMLElement>();
 
   useEffect(() => {
@@ -38,6 +32,7 @@ const ModalManager = () => {
         variants={bgAnimation}
         initial="closed"
         animate={opened ? 'opened' : 'closed'}
+        transition={{ ease: DEFAULT_EASE }} // Use the valid easing value here
       >
         <AnimatePresence>
           {opened && (
@@ -48,6 +43,7 @@ const ModalManager = () => {
               exit="exited"
               onClick={(e) => e.stopPropagation()}
               className="p-6"
+              transition={{ ease: DEFAULT_EASE }} // Use the valid easing value here
             >
               {modal}
             </motion.div>
