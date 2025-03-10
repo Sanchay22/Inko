@@ -7,7 +7,7 @@
     "dev:client": "ts-node server/index.ts",
     "build:server": "tsc --project tsconfig.server.json",
     "build:next": "next build",
-    "build": "npm-run-all build:*",
+    "build": "npm run build:server && npm run build:next",
     "start": "NODE_ENV=production node build/index.js",
     "lint": "next lint"
   },
